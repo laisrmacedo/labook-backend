@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import console from 'console'
 import { UserController } from './controller/UserController'
+import { PostController } from './controller/PostController'
 
 const app = express()
 
@@ -14,6 +15,9 @@ app.listen(3003, () => {
 
 const userController = new UserController()
 
-
 app.get("/users", userController.getUsers)
+
+const postController = new PostController()
+
+app.get("/posts", postController.getPosts)
 
