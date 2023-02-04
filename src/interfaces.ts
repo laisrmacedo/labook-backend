@@ -11,3 +11,13 @@ export interface Users {
   role: string,
   created_at: string
 }
+
+export interface Posts {
+  id: string,
+  creator_id: string,
+  content: string,
+  likes: number,
+  dislikes: number,
+  created_at: string,
+  updated_at: string
+}
