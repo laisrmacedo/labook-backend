@@ -3,7 +3,7 @@ enum Role {
   NORMAL = "Normal"
 }
 
-export interface Users {
+export interface UsersDB {
   id: string,
   name: string,
   email: string,
@@ -12,7 +12,7 @@ export interface Users {
   created_at: string
 }
 
-export interface Posts {
+export interface PostsDB {
   id: string,
   creator_id: string,
   content: string,
