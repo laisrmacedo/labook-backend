@@ -1,4 +1,4 @@
-import { Users } from "../interfaces";
+import { UsersDB } from "../interfaces";
 import { BaseDatabase } from "./BaseDatabase";
 
 export class UsersDatabase extends BaseDatabase{
@@ -6,7 +6,7 @@ export class UsersDatabase extends BaseDatabase{
   public static TABLE_USERS = "users" //global constant
 
   //methods
-  public async findUsers(q: string | undefined): Promise<Users[]>{
+  public async findUsers(q: string | undefined): Promise<UsersDB[]>{
     let usersDB
     if(q){
       const result = await BaseDatabase
