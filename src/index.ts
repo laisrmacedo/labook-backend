@@ -14,10 +14,18 @@ app.listen(3003, () => {
 })
 
 const userController = new UserController()
-
+// signup
+//  login
 app.get("/users", userController.getUsers)
+app.post("/users", userController.createUser)
+
 
 const postController = new PostController()
+//  get posts
+//  create post
+//  edit post
+//  delete post
+//  like / dislike post
 
 app.get("/posts", postController.getPosts)
 
