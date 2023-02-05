@@ -20,5 +20,19 @@ export class UsersDatabase extends BaseDatabase{
     }
     return usersDB
   }
+
+  public async findUserByEmail(email: string): Promise<UsersDB[]>{
+      const result: UsersDB[] = await BaseDatabase
+      .connection(UsersDatabase.TABLE_USERS)
+      .where({ email })
+
+      return result
+  }
+
+  public async createUser(user: UsersDB): Promise<void>{
+    await BaseDatabase
+    .connection(UsersDatabase.TABLE_USERS)
+    .insert(user)
+  }
 }
 

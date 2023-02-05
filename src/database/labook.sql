@@ -9,11 +9,11 @@ CREATE TABLE users (
   role TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+INSERT INTO users (id, name, email, password, role, created_at)
+VALUES ("test","test", "test@test.test","test","test","test");
 
 SELECT * FROM users;
-
-INSERT INTO users (id, name, email, password, role, created_at)
-VALUES ("test","test","test","test","test","test");
+DROP TABLE users;
 
 CREATE TABLE posts (
   id TEXT PRIMARY KEY UNIQUE NOT NULL,
