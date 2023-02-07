@@ -6,7 +6,7 @@ export class PostsDatabase extends BaseDatabase{
   public static TABLE_POSTS = "posts" //global constant
 
   //methods
-  public async findPosts(q: string | undefined): Promise<PostsDB[]>{
+  public async getPosts(q: string | undefined): Promise<PostsDB[]>{
     let postsDB
     if(q){
       const result = await BaseDatabase

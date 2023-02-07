@@ -6,7 +6,7 @@ export class UsersDatabase extends BaseDatabase{
   public static TABLE_USERS = "users" //global constant
 
   //methods
-  public async findUsers(q: string | undefined): Promise<UsersDB[]>{
+  public async getUsers(q: string | undefined): Promise<UsersDB[]>{
     let usersDB
     if(q){
       const result = await BaseDatabase
@@ -21,7 +21,7 @@ export class UsersDatabase extends BaseDatabase{
     return usersDB
   }
 
-  public async findUserByEmail(email: string): Promise<UsersDB[]>{
+  public async getUserByEmail(email: string): Promise<UsersDB[]>{
       const result: UsersDB[] = await BaseDatabase
       .connection(UsersDatabase.TABLE_USERS)
       .where({ email })

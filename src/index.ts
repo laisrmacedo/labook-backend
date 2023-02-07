@@ -1,8 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import console from 'console'
-import { UserController } from './controller/UserController'
-import { PostController } from './controller/PostController'
+import { usersRouter } from './router/UsersRouter'
+import { postsRouter } from './router/PostsRouter'
 
 const app = express()
 
@@ -13,19 +13,7 @@ app.listen(3003, () => {
     console.log("Servidor rodando na porta 3003")
 })
 
-const userController = new UserController()
-// signup
-//  login
-app.get("/users", userController.getUsers)
-app.post("/users", userController.createUser)
+app.use("/users", usersRouter)
 
-
-const postController = new PostController()
-//  get posts
-//  create post
-//  edit post
-//  delete post
-//  like / dislike post
-
-app.get("/posts", postController.getPosts)
+app.use("/posts", postsRouter)
 
