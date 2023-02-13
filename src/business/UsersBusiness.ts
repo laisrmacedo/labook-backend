@@ -23,31 +23,11 @@ export class UsersBusiness {
 
   public createUser = async (name: string, email: string, password:string) => {
     //syntax checking
-    if (!name ||  name === "") {
-      throw new BadRequestError("ERROR: all fields are mandatory.")
-    }
-    if (typeof name !== "string") {
-      throw new BadRequestError("ERROR: 'name' must be of type string.")
-    }
     if(name.length < 2) {
       throw new BadRequestError("ERROR: 'name' must be at least 2 characters.")
     }
-
-    if(!email || email === ""){
-      throw new BadRequestError("ERROR: all fields are mandatory.")
-    }
-    if (typeof email !== "string") {
-      throw new BadRequestError("ERROR: 'email' must be of type string.")
-    }
     if (!email.match(/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/g)) {
       throw new BadRequestError("ERROR: 'email' must be like 'example@example.example'.")
-    }
-
-    if(!password || password === ""){
-      throw new BadRequestError("ERROR: all fields are mandatory.")
-    }
-    if (typeof password !== "string") {
-      throw new BadRequestError("ERROR: 'password' must be of type string.")
     }
     if (!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,12}$/g)) {
       throw new BadRequestError("ERROR: 'password' must be between 8 and 12 characters, with uppercase and lowercase letters and at least one number and one special character")
