@@ -1,4 +1,5 @@
 import { UsersDatabase } from "../database/UsersDatabase"
+import { CreateUserInputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
 import { UsersDB, Role } from "../interfaces"
 import { User } from "../models/User"
@@ -21,7 +22,9 @@ export class UsersBusiness {
     return (users)
   }
 
-  public createUser = async (name: string, email: string, password:string) => {
+  public createUser = async (input: CreateUserInputDTO) => {
+    const {name, email, password} = input
+    
     //syntax checking
     if(name.length < 2) {
       throw new BadRequestError("ERROR: 'name' must be at least 2 characters.")

@@ -4,6 +4,7 @@ import { User } from "../models/User"
 import { Role, UsersDB } from "../interfaces"
 import { UsersBusiness } from "../business/UsersBusiness"
 import { BaseError } from "../errors/BaseError"
+import { UserDTO } from "../dtos/UserDTO"
 
 export class UserController {
   public getUsers = async (req: Request, res: Response) => {
@@ -27,10 +28,16 @@ export class UserController {
 
   public createUser = async (req: Request, res: Response) => {
     try {
-      const {name, email, password} = req.body
+      const userDTO = new UserDTO()
+
+      const input = userDTO.createUserInput(
+        req.body.name,
+        req.body.email,
+        req.body.password,
+      )
 
       const userBusiness = new UsersBusiness()
-      const output = userBusiness.createUser(name, email, password)
+      const output = userBusiness.createUser(input)
     //não consigo mostrar?
       res.status(200).send({
         message: "User created.",
