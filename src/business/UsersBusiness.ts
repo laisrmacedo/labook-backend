@@ -1,13 +1,15 @@
 import { UsersDatabase } from "../database/UsersDatabase"
-import { CreateUserInputDTO } from "../dtos/UserDTO"
+import { CreateUserInputDTO, LoginInputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { UsersDB, Role } from "../interfaces"
+import { UsersDB, USER_ROLES } from "../interfaces"
 import { User } from "../models/User"
 import { IdGenerator } from "../services/IdGenerator"
+import { TokenManager, TokenPayload } from "../services/TokenManager"
 
 export class UsersBusiness {
   constructor(
-    private usersDatabase: UsersDatabase
+    private usersDatabase: UsersDatabase,
+    private tokenManager: TokenManager
   ){}
   public getUsers = async (q: string | undefined) => {
     // const usersDataBase = new UsersDatabase()
@@ -57,7 +59,7 @@ export class UsersBusiness {
       name, 
       email, 
       password, 
-      Role.NORMAL, //temporaria
+      USER_ROLES.NORMAL, //temporaria
       new Date().toISOString()
     )
 
@@ -73,5 +75,34 @@ export class UsersBusiness {
     await this.usersDatabase.createUser(userDB)
 
     return userInstance
+  }
+
+  public login = async (input: LoginInputDTO) => {
+    const { email, password } = input
+
+    const [userDB] = await this.usersDatabase.getUserByEmail(email)
+
+    if(!userDB){
+      throw new BadRequestError("ERROR: 'email' not found.")
+    }
+
+    if(userDB.password !== password){
+      throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
+    }    
+
+    // console.log(userDB)
+    const tokenPayload: TokenPayload = {
+      id: userDB.id,
+      name: userDB.name,
+      role: userDB.role
+    }
+
+    const token = this.tokenManager.createToken(tokenPayload)
+    const output = {
+      message: "Login success",
+      token: token
+    }
+
+    return output
   }
 }

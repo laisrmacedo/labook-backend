@@ -1,13 +1,11 @@
 import { Request, Response } from "express"
-import { UsersDatabase } from "../database/UsersDatabase"
-import { User } from "../models/User"
-import { Role, UsersDB } from "../interfaces"
 import { UsersBusiness } from "../business/UsersBusiness"
 import { BaseError } from "../errors/BaseError"
 import { UserDTO } from "../dtos/UserDTO"
 
 export class UserController {
   constructor(
+    private userDTO: UserDTO,
     private usersBusiness: UsersBusiness
   ){}
   public getUsers = async (req: Request, res: Response) => {
@@ -31,9 +29,9 @@ export class UserController {
 
   public createUser = async (req: Request, res: Response) => {
     try {
-      const userDTO = new UserDTO()
+      // const userDTO = new UserDTO()
 
-      const input = userDTO.createUserInput(
+      const input = this.userDTO.createUserInput(
         req.body.name,
         req.body.email,
         req.body.password,
@@ -57,6 +55,26 @@ export class UserController {
     }
   }
 
+  public login = async (req: Request, res: Response) => {
+    try {
+      const input = this.userDTO.loginInput(
+        req.body.email,
+        req.body.password,
+      )
+
+      const output = await this.usersBusiness.login(input)
+
+      res.status(200).send(output)
+  
+    } catch (error) {
+        console.log(error)
+       if (error instanceof BaseError) {
+              res.status(error.statusCode).send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+  }
   // async (req: Request, res: Response) => {
   //   try {
 
