@@ -74,7 +74,19 @@ export class UsersBusiness {
 
     await this.usersDatabase.createUser(userDB)
 
-    return userInstance
+    const tokenPayload: TokenPayload = {
+      id: userInstance.getId(),
+      name: userInstance.getName(),
+      role: userInstance.getRole()
+    }
+
+    const token = this.tokenManager.createToken(tokenPayload)
+    const output = {
+      message: "Signup success",
+      token: token
+    }
+
+    return output
   }
 
   public login = async (input: LoginInputDTO) => {
@@ -90,7 +102,6 @@ export class UsersBusiness {
       throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
     }    
 
-    // console.log(userDB)
     const tokenPayload: TokenPayload = {
       id: userDB.id,
       name: userDB.name,
