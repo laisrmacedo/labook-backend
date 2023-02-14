@@ -7,12 +7,15 @@ import { BaseError } from "../errors/BaseError"
 import { UserDTO } from "../dtos/UserDTO"
 
 export class UserController {
+  constructor(
+    private usersBusiness: UsersBusiness
+  ){}
   public getUsers = async (req: Request, res: Response) => {
     try {
       const q = req.query.q as string | undefined
   
-      const usersBusiness = new UsersBusiness()
-      const output = await usersBusiness.getUsers(q)
+      // const usersBusiness = new UsersBusiness()
+      const output = await this.usersBusiness.getUsers(q)
 
       res.status(200).send(output)
   
@@ -36,8 +39,8 @@ export class UserController {
         req.body.password,
       )
 
-      const userBusiness = new UsersBusiness()
-      const output = userBusiness.createUser(input)
+      // const userBusiness = new UsersBusiness()
+      const output = await this.usersBusiness.createUser(input)
     //não consigo mostrar?
       res.status(200).send({
         message: "User created.",

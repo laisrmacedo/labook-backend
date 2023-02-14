@@ -3,11 +3,15 @@ import { CreateUserInputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
 import { UsersDB, Role } from "../interfaces"
 import { User } from "../models/User"
+import { IdGenerator } from "../services/IdGenerator"
 
 export class UsersBusiness {
+  constructor(
+    private usersDatabase: UsersDatabase
+  ){}
   public getUsers = async (q: string | undefined) => {
-    const usersDataBase = new UsersDatabase()
-    const usersDB: UsersDB[] = await usersDataBase.getUsers(q)
+    // const usersDataBase = new UsersDatabase()
+    const usersDB: UsersDB[] = await this.usersDatabase.getUsers(q)
 
     //tipar pela class?
     const users: User[] = usersDB.map((userDB) => new User(
@@ -37,16 +41,19 @@ export class UsersBusiness {
     }
     
     //replay ckeck
-    const userDatabase = new UsersDatabase()
-    const [foundEmail] = await userDatabase.getUserByEmail(email)
+    // const userDatabase = new UsersDatabase()
+    const [foundEmail] = await this.usersDatabase.getUserByEmail(email)
 
     if(foundEmail){
       throw new BadRequestError("ERROR: 'email' already exists.")
     }
 
+    const idInstance = new IdGenerator()
+    const id = idInstance.generate()
+
     //signup
     const userInstance = new User(
-      new Date().toDateString(), //temporaria
+      id,
       name, 
       email, 
       password, 
@@ -63,7 +70,7 @@ export class UsersBusiness {
       created_at: userInstance.getCreatedAt()
     }
 
-    await userDatabase.createUser(userDB)
+    await this.usersDatabase.createUser(userDB)
 
     return userInstance
   }
