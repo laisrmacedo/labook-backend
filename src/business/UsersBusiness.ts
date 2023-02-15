@@ -9,7 +9,8 @@ import { TokenManager, TokenPayload } from "../services/TokenManager"
 export class UsersBusiness {
   constructor(
     private usersDatabase: UsersDatabase,
-    private tokenManager: TokenManager
+    private tokenManager: TokenManager,
+    private idGenerator: IdGenerator
   ){}
   public getUsers = async (q: string | undefined) => {
     // const usersDataBase = new UsersDatabase()
@@ -50,8 +51,8 @@ export class UsersBusiness {
       throw new BadRequestError("ERROR: 'email' already exists.")
     }
 
-    const idInstance = new IdGenerator()
-    const id = idInstance.generate()
+    // const idInstance = new IdGenerator()
+    const id = this.idGenerator.generate()
 
     //signup
     const userInstance = new User(

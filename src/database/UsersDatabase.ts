@@ -30,6 +30,7 @@ export class UsersDatabase extends BaseDatabase{
 
       return result
   }
+  
   public async getUserByEmail(email: string): Promise<UsersDB[]>{
       const result: UsersDB[] = await BaseDatabase
       .connection(UsersDatabase.TABLE_USERS)
