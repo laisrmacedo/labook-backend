@@ -1,23 +1,23 @@
 import { BadRequestError } from "../errors/BadRequestError"
 import { User } from "../models/User"
 
-export interface CreateUserInputDTO {
+export interface CreateUserOutputDTO {
   name: string,
   email: string,
   password: string
 }
 
-export interface LoginInputDTO {
+export interface LoginOutputDTO {
   email: string,
   password: string
 }
 
 export class UserDTO {
-  public createUserInput(
+  public createUserInputDTO(
     name: unknown,
     email: unknown,
     password: unknown
-  ): CreateUserInputDTO{
+  ): CreateUserOutputDTO{
 
     if (!name ||  name === "") {
       throw new BadRequestError("ERROR: all fields are mandatory.")
@@ -40,7 +40,7 @@ export class UserDTO {
       throw new BadRequestError("ERROR: 'password' must be of type string.")
     }
 
-    const dto: CreateUserInputDTO = {
+    const dto: CreateUserOutputDTO = {
       name,
       email,
       password
@@ -49,10 +49,10 @@ export class UserDTO {
     return dto
   }
 
-  public loginInput(
+  public loginInputDTO(
     email: unknown,
     password: unknown
-  ): LoginInputDTO{
+  ): LoginOutputDTO{
 
     if(!email || email === ""){
       throw new BadRequestError("ERROR: all fields are mandatory.")
@@ -68,7 +68,7 @@ export class UserDTO {
       throw new BadRequestError("ERROR: 'password' must be of type string.")
     }
 
-    const dto: LoginInputDTO = {
+    const dto: LoginOutputDTO = {
       email,
       password
     }

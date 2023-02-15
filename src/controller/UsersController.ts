@@ -31,7 +31,7 @@ export class UserController {
     try {
       // const userDTO = new UserDTO()
 
-      const input = this.userDTO.createUserInput(
+      const input = this.userDTO.createUserInputDTO(
         req.body.name,
         req.body.email,
         req.body.password,
@@ -39,10 +39,9 @@ export class UserController {
 
       // const userBusiness = new UsersBusiness()
       const output = await this.usersBusiness.createUser(input)
-    //não consigo mostrar?
-      res.status(200).send({
-        message: "User created.",
-        user: output
+
+      res.status(201).send({
+        message: "User created."
       })
   
     } catch (error) {
@@ -57,13 +56,12 @@ export class UserController {
 
   public login = async (req: Request, res: Response) => {
     try {
-      const input = this.userDTO.loginInput(
+      const input = this.userDTO.loginInputDTO(
         req.body.email,
         req.body.password,
       )
 
       const output = await this.usersBusiness.login(input)
-
       res.status(200).send(output)
   
     } catch (error) {
