@@ -116,4 +116,19 @@ export class UsersBusiness {
 
     return output
   }
+
+  public deleteUser = async (idToDelete: string) => {
+    const userDB = await this.usersDatabase.getUserById(idToDelete)
+
+    if(userDB.length === 0){
+      throw new BadRequestError("ERROR: 'id' not found.")
+    }
+
+    await this.usersDatabase.deleteUser(idToDelete)
+    const output = {
+      message: "User deleted."
+    }
+
+    return output
+  }
 }

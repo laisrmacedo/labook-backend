@@ -75,17 +75,21 @@ export class UserController {
         }
     }
   }
-  // async (req: Request, res: Response) => {
-  //   try {
 
-  //     res.status(200).send(videosDB)
+  public deleteUser = async (req: Request, res: Response) => {
+    try {
+      const idToDelete = req.params.id
+
+      const output = await this.usersBusiness.deleteUser(idToDelete)
+      res.status(200).send(output)
   
-  //   } catch (error) {
-  //       console.log(error)
-  //      if (error instanceof BaseError) {
-              // res.status(error.statusCode).send(error.message)
-  //       } else {
-  //           res.send("Erro inesperado")
-  //       }
-  //   }
+    } catch (error) {
+        console.log(error)
+       if (error instanceof BaseError) {
+              res.status(error.statusCode).send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+  }
 }
