@@ -20,4 +20,10 @@ export class PostsDatabase extends BaseDatabase{
     }
     return postsDB
   }
+
+  public async insertPost(post: PostsDB){
+    await BaseDatabase
+    .connection(PostsDatabase.TABLE_POSTS)
+    .insert(post)
+  }
 }
