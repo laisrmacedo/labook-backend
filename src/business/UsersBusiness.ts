@@ -1,7 +1,7 @@
 import { UsersDatabase } from "../database/UsersDatabase"
-import { CreateUserInputDTO, LoginInputDTO } from "../dtos/UserDTO"
+import { CreateUserOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { UsersDB, USER_ROLES } from "../interfaces"
+import { UserDB, USER_ROLES } from "../interfaces"
 import { User } from "../models/User"
 import { IdGenerator } from "../services/IdGenerator"
 import { TokenManager, TokenPayload } from "../services/TokenManager"
@@ -14,7 +14,7 @@ export class UsersBusiness {
   ){}
   public getUsers = async (q: string | undefined) => {
     // const usersDataBase = new UsersDatabase()
-    const usersDB: UsersDB[] = await this.usersDatabase.getUsers(q)
+    const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
 
     //tipar pela class?
     const users: User[] = usersDB.map((userDB) => new User(
@@ -29,7 +29,7 @@ export class UsersBusiness {
     return (users)
   }
 
-  public createUser = async (input: CreateUserInputDTO) => {
+  public createUser = async (input: CreateUserOutputDTO) => {
     const {name, email, password} = input
     
     //syntax checking
@@ -45,7 +45,7 @@ export class UsersBusiness {
     
     //replay ckeck
     // const userDatabase = new UsersDatabase()
-    const [foundEmail] = await this.usersDatabase.getUserByEmail(email)
+    const foundEmail = await this.usersDatabase.getUserByEmail(email)
 
     if(foundEmail){
       throw new BadRequestError("ERROR: 'email' already exists.")
@@ -64,7 +64,7 @@ export class UsersBusiness {
       new Date().toISOString()
     )
 
-    const userDB: UsersDB = {
+    const userDB: UserDB = {
       id: userInstance.getId(),
       name: userInstance.getName(),
       email: userInstance.getEmail(),
@@ -90,10 +90,10 @@ export class UsersBusiness {
     return output
   }
 
-  public login = async (input: LoginInputDTO) => {
+  public login = async (input: LoginOutputDTO) => {
     const { email, password } = input
 
-    const [userDB] = await this.usersDatabase.getUserByEmail(email)
+    const userDB: UserDB | undefined = await this.usersDatabase.getUserByEmail(email)
 
     if(!userDB){
       throw new BadRequestError("ERROR: 'email' not found.")

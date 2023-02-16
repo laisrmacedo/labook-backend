@@ -1,4 +1,4 @@
-import { UsersDB } from "../interfaces";
+import { UserDB } from "../interfaces";
 import { BaseDatabase } from "./BaseDatabase";
 
 export class UsersDatabase extends BaseDatabase{
@@ -8,7 +8,7 @@ export class UsersDatabase extends BaseDatabase{
   public static TABLE_LIKES_DISLIKES = "likes_dislikes" //global constant
 
   //methods
-  public async getUsers(q: string | undefined): Promise<UsersDB[]>{
+  public async getUsers(q: string | undefined): Promise<UserDB[]>{
     let usersDB
     if(q){
       const result = await BaseDatabase
@@ -23,23 +23,23 @@ export class UsersDatabase extends BaseDatabase{
     return usersDB
   }
 
-  public async getUserById(id: string): Promise<UsersDB[]>{
-      const result: UsersDB[] = await BaseDatabase
+  public async getUserById(id: string): Promise<UserDB[]>{
+      const result: UserDB[] = await BaseDatabase
       .connection(UsersDatabase.TABLE_USERS)
       .where({ id })
 
       return result
   }
   
-  public async getUserByEmail(email: string): Promise<UsersDB[]>{
-      const result: UsersDB[] = await BaseDatabase
+  public async getUserByEmail(email: string): Promise<UserDB | undefined>{
+      const result: UserDB[] = await BaseDatabase
       .connection(UsersDatabase.TABLE_USERS)
       .where({ email })
 
-      return result
+      return result[0]
   }
 
-  public async createUser(user: UsersDB): Promise<void>{
+  public async createUser(user: UserDB): Promise<void>{
     await BaseDatabase
     .connection(UsersDatabase.TABLE_USERS)
     .insert(user)

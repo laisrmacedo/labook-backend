@@ -3,7 +3,7 @@ export enum USER_ROLES {
   ADMIN = "ADMIN"
 }
 
-export interface UsersDB {
+export interface UserDB {
   id: string,
   name: string,
   email: string,
@@ -12,16 +12,16 @@ export interface UsersDB {
   created_at: string
 }
 
-export interface Users {
-  id: string,
-  name: string,
-  email: string,
-  password: string,
-  role: string,
-  createdAt: string
-}
+// export interface User {
+//   id: string,
+//   name: string,
+//   email: string,
+//   password: string,
+//   role: string,
+//   createdAt: string
+// }
 
-export interface PostsDB {
+export interface PostDB {
   id: string,
   creator_id: string,
   content: string,
@@ -31,12 +31,12 @@ export interface PostsDB {
   updated_at: string
 }
 
-export interface Posts {
-  id: string,
-  creatorId: string,
-  content: string,
-  likes: number,
-  dislikes: number,
-  createdAt: string,
-  updatedAt: string
-}
+// export interface Post {
+//   id: string,
+//   creatorId: string,
+//   content: string,
+//   likes: number,
+//   dislikes: number,
+//   createdAt: string,
+//   updatedAt: string
+// }
