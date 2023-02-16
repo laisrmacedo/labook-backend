@@ -68,5 +68,25 @@ export class PostController {
     }
   }
 
+  public deletePost = async (req: Request, res: Response) => {
+    try {
+      const input = this.postDTO.deletePostInputDTO(
+        req.params.id,
+        req.headers.authorization
+      )
+
+      await this.postsBusiness.deletePost(input)
+      res.status(200).end()
+  
+    } catch (error) {
+        console.log(error)
+        if (error instanceof BaseError) {
+          res.status(error.statusCode).send(error.message)
+        } else {
+          res.send("Erro inesperado")
+        }
+    }
+  }
+
   
 }

@@ -1,7 +1,7 @@
 import { PostsDatabase } from "../database/PostsDatabase"
-import { CreatePostOutputDTO, EditPostOutputDTO } from "../dtos/PostDTO"
+import { CreatePostOutputDTO, DeletePostOutputDTO, EditPostOutputDTO } from "../dtos/PostDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { PostDB } from "../interfaces"
+import { PostDB, USER_ROLES } from "../interfaces"
 import { Post } from "../models/Post"
 import { IdGenerator } from "../services/IdGenerator"
 import { TokenManager } from "../services/TokenManager"
@@ -90,6 +90,27 @@ export class PostsBusiness {
     const updatedPostDB = updatedPost.toDBModel()
 
     await this.postsDatabase.updatePost(idToEdit, updatedPostDB)
+  }
+
+  public deletePost = async (input: DeletePostOutputDTO): Promise<void> => {
+    const {idToDelete, token} = input
+
+    //token ckeck
+    const payload = this.tokenManager.getPayload(token)
+    if(payload === null){
+      throw new BadRequestError("ERROR: Login failed")
+    }
+
+    const postDB: PostDB | undefined = await this.postsDatabase.getPostById(idToDelete)
+    if(!postDB){
+      throw new BadRequestError("ERROR: 'id' not found")
+    }
+
+    if(payload.role !== USER_ROLES.ADMIN && postDB.creator_id !== payload.id){
+      throw new BadRequestError("ERROR: Permission fail")
+    }
+
+    await this.postsDatabase.deletePost(idToDelete)
   }
 
 }

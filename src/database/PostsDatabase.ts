@@ -36,10 +36,17 @@ export class PostsDatabase extends BaseDatabase{
     .insert(post)
   }
 
-  public async updatePost(idToEdit: string, updatedPost: PostDB){
+  public async updatePost(id: string, updatedPost: PostDB){
     await BaseDatabase
     .connection(PostsDatabase.TABLE_POSTS)
     .update(updatedPost)
-    .where({id: idToEdit})
+    .where({ id })
+  }
+
+  public async deletePost(id: string){
+    await BaseDatabase
+    .connection(PostsDatabase.TABLE_POSTS)
+    .del()
+    .where({ id })
   }
 }
