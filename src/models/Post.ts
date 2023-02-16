@@ -1,4 +1,4 @@
-import { Posts, PostsDB } from "../interfaces"
+import { PostDB } from "../interfaces"
 
 export class Post {
   constructor(
@@ -17,9 +17,14 @@ export class Post {
   public getCreatorId():string{
     return this.creatorId
   }
-  public getContente():string{
+
+  public getContent():string{
     return this.content
   }
+  public setContent(value: string): void{
+    this.content = value
+  }
+
   public getLikes():number{
     return this.likes
   }
@@ -29,11 +34,15 @@ export class Post {
   public getCreatedAt():string{
     return this.createdAt
   }
+
   public getUpdatedAt():string{
     return this.updatedAt
   }
+  public setUpdatedAt(value: string): void{
+    this.updatedAt = value
+  }
 
-  public toDBModel(): PostsDB {
+  public toDBModel(): PostDB {
     return {
       id: this.id, 
       creator_id: this.creatorId,
@@ -45,7 +54,7 @@ export class Post {
     }
 }
 
-public toBusinessModel(): Posts {
+public toBusinessModel() {
     return {
       id: this.id,
       creatorId: this.creatorId,

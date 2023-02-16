@@ -21,7 +21,8 @@ const postsController = new PostController(
 postsRouter.get("/", postsController.getPosts)
 //  create post
 postsRouter.post("/", postsController.createPost)
-
 //  edit post
+postsRouter.put("/:id", postsController.editPost)
+
 //  delete post
 //  like / dislike post

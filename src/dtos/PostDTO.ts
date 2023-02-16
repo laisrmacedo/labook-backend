@@ -1,20 +1,21 @@
 import { BadRequestError } from "../errors/BadRequestError"
 
-export interface CreatePostInputDTO {
+export interface CreatePostOutputDTO {
   content: string
   token: string
 }
 
-export interface LoginInputDTO {
-  email: string,
-  password: string
+export interface EditPostOutputDTO {
+  idToEdit: string,
+  content: string,
+  token: string
 }
 
 export class PostDTO {
-  public createPostInput(
+  public createPostInputDTO(
     content: unknown,
-    token: unknown
-  ): CreatePostInputDTO{
+    token: string | undefined
+  ): CreatePostOutputDTO{
     
     if (!content ||  content === "") {
       throw new BadRequestError("ERROR: the field is mandatory.")
@@ -31,7 +32,7 @@ export class PostDTO {
       throw new BadRequestError("ERROR: 'content' must be of type string.")
     }
 
-    const dto: CreatePostInputDTO = {
+    const dto: CreatePostOutputDTO = {
       content,
       token
     }
@@ -39,35 +40,40 @@ export class PostDTO {
     return dto
   }
 
-  // public loginInput(
-  //   email: unknown,
-  //   password: unknown
-  // ): LoginInputDTO{
+  public editPostInputDTO(
+    idToEdit: string | undefined,
+    content: unknown,
+    token: string | undefined
+  ): EditPostOutputDTO{
+    console.log(idToEdit)
+    if(idToEdit === ":id" || idToEdit === ""){
+      throw new BadRequestError("ERROR: report the id of the post to be edited.")
+    }
+    if (typeof idToEdit !== "string") {
+      throw new BadRequestError("ERROR: 'id' must be of type string.")
+    }
 
-  //   if(!email || email === ""){
-  //     throw new BadRequestError("ERROR: all fields are mandatory.")
-  //   }
-  //   if (typeof email !== "string") {
-  //     throw new BadRequestError("ERROR: 'email' must be of type string.")
-  //   }
+    if(!content || content === ""){
+      throw new BadRequestError("ERROR: the field is mandatory.")
+    }
+    if (typeof content !== "string") {
+      throw new BadRequestError("ERROR: 'content' must be of type string.")
+    }
 
-  //   if(!password || password === ""){
-  //     throw new BadRequestError("ERROR: all fields are mandatory.")
-  //   }
-  //   if (typeof password !== "string") {
-  //     throw new BadRequestError("ERROR: 'password' must be of type string.")
-  //   }
+    if(!token || token === ""){
+      throw new BadRequestError("ERROR: log in to edit the post.")
+    }
+    if (typeof token !== "string") {
+      throw new BadRequestError("ERROR: 'token' must be of type string.")
+    }
 
-  //   const dto: LoginInputDTO = {
-  //     email,
-  //     password
-  //   }
+    const dto: EditPostOutputDTO = {
+      idToEdit,
+      content,
+      token
+    }
 
-  //   return dto
-  // }
-  // public createUserOutput(user: User){
-  //   const dto = {
-      
-  //   }
-  // }
+    return dto
+  }
+
 }
