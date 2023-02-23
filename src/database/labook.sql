@@ -9,8 +9,6 @@ CREATE TABLE users (
   role TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
-INSERT INTO users (id, name, email, password, role, created_at)
-VALUES ("test","test", "test@test.test","test","test","test");
 
 SELECT * FROM users;
 DROP TABLE users;
@@ -28,9 +26,6 @@ CREATE TABLE posts (
     ON UPDATE CASCADE 
 );
 
-INSERT INTO posts (id, creator_id, content, likes, dislikes, created_at, updated_at)
-VALUES ("test","test","test", 0, 0,"test","test");
-
 SELECT * FROM posts;
 
 DROP TABLE posts;
@@ -46,9 +41,6 @@ CREATE TABLE likes_dislikes (
     ON DELETE CASCADE 
     ON UPDATE CASCADE 
 );
-
-INSERT INTO likes_dislikes (user_id, post_id, like)
-VALUES ("test","test", 1);
 
 SELECT * FROM likes_dislikes;
 

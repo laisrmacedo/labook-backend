@@ -12,6 +12,7 @@ export class UsersBusiness {
     private tokenManager: TokenManager,
     private idGenerator: IdGenerator
   ){}
+
   public getUsers = async (q: string | undefined) => {
     // const usersDataBase = new UsersDatabase()
     const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
@@ -60,7 +61,7 @@ export class UsersBusiness {
       name, 
       email, 
       password, 
-      USER_ROLES.NORMAL, //temporaria
+      USER_ROLES.ADMIN, 
       new Date().toISOString()
     )
 
