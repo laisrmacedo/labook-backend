@@ -3,6 +3,7 @@ import { UsersBusiness } from "../business/UsersBusiness";
 import { UserController } from "../controller/UsersController";
 import { UsersDatabase } from "../database/UsersDatabase";
 import { UserDTO } from "../dtos/UserDTO";
+import { HashManager } from "../services/HashManager";
 import { IdGenerator } from "../services/IdGenerator";
 import { TokenManager } from "../services/TokenManager";
 
@@ -13,12 +14,13 @@ const userController = new UserController(
   new UsersBusiness(
     new UsersDatabase(),
     new TokenManager(), 
-    new IdGenerator()
+    new IdGenerator(),
+    new HashManager()
   )
 )
 // signup
 //  login
 usersRouter.get("/", userController.getUsers)
-usersRouter.post("/", userController.createUser)
+usersRouter.post("/signup", userController.signup)
 usersRouter.post("/login", userController.login)
 usersRouter.delete("/:id", userController.deleteUser)

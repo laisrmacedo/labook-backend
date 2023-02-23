@@ -8,13 +8,12 @@ export class UserController {
     private userDTO: UserDTO,
     private usersBusiness: UsersBusiness
   ){}
+
   public getUsers = async (req: Request, res: Response) => {
     try {
       const q = req.query.q as string | undefined
   
-      // const usersBusiness = new UsersBusiness()
       const output = await this.usersBusiness.getUsers(q)
-
       res.status(200).send(output)
   
     } catch (error) {
@@ -27,19 +26,15 @@ export class UserController {
     }
   }
 
-  public createUser = async (req: Request, res: Response) => {
+  public signup = async (req: Request, res: Response) => {
     try {
-      // const userDTO = new UserDTO()
-
       const input = this.userDTO.createUserInputDTO(
         req.body.name,
         req.body.email,
         req.body.password,
       )
 
-      // const userBusiness = new UsersBusiness()
-      const output = await this.usersBusiness.createUser(input)
-
+      const output = await this.usersBusiness.signup(input)
       res.status(201).send(output)
   
     } catch (error) {

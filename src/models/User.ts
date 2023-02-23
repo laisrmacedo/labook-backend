@@ -1,4 +1,4 @@
-import { USER_ROLES } from "../interfaces"
+import { UserDB, USER_ROLES } from "../interfaces"
 
 export class User {
   constructor(
@@ -28,5 +28,28 @@ export class User {
   public getCreatedAt():string{
     return this.createdAt
   }
+
+  public toDBModel(): UserDB {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      password: this.password,
+      role: this.role,
+      created_at: this.createdAt
+    }
+  }
+
+  // public toBusinessModel() {
+  //   return {
+  //     id: this.id,
+  //     creatorId: this.creatorId,
+  //     content: this.content,
+  //     likes: this.likes,
+  //     dislikes: this.dislikes,
+  //     createdAt: this.createdAt,
+  //     updatedAt: this.updatedAt
+  //   }
+  // }
 
 }

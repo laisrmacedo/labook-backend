@@ -3,6 +3,7 @@ import { CreateUserOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
 import { UserDB, USER_ROLES } from "../interfaces"
 import { User } from "../models/User"
+import { HashManager } from "../services/HashManager"
 import { IdGenerator } from "../services/IdGenerator"
 import { TokenManager, TokenPayload } from "../services/TokenManager"
 
@@ -10,14 +11,13 @@ export class UsersBusiness {
   constructor(
     private usersDatabase: UsersDatabase,
     private tokenManager: TokenManager,
-    private idGenerator: IdGenerator
+    private idGenerator: IdGenerator,
+    private hashManager: HashManager
   ){}
 
   public getUsers = async (q: string | undefined) => {
-    // const usersDataBase = new UsersDatabase()
     const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
 
-    //tipar pela class?
     const users: User[] = usersDB.map((userDB) => new User(
       userDB.id,
       userDB.name,
@@ -30,7 +30,7 @@ export class UsersBusiness {
     return (users)
   }
 
-  public createUser = async (input: CreateUserOutputDTO) => {
+  public signup = async (input: CreateUserOutputDTO) => {
     const {name, email, password} = input
     
     //syntax checking
@@ -45,35 +45,24 @@ export class UsersBusiness {
     }
     
     //replay ckeck
-    // const userDatabase = new UsersDatabase()
     const foundEmail = await this.usersDatabase.getUserByEmail(email)
-
     if(foundEmail){
       throw new BadRequestError("ERROR: 'email' already exists.")
     }
 
-    // const idInstance = new IdGenerator()
-    const id = this.idGenerator.generate()
+    const hashedPassword = await this.hashManager.hash(password)
 
     //signup
     const userInstance = new User(
-      id,
+      this.idGenerator.generate(),
       name, 
       email, 
-      password, 
-      USER_ROLES.ADMIN, 
+      hashedPassword, 
+      USER_ROLES.NORMAL, 
       new Date().toISOString()
     )
 
-    const userDB: UserDB = {
-      id: userInstance.getId(),
-      name: userInstance.getName(),
-      email: userInstance.getEmail(),
-      password: userInstance.getPassword(),
-      role: userInstance.getRole(),
-      created_at: userInstance.getCreatedAt()
-    }
-
+    const userDB = userInstance.toDBModel()
     await this.usersDatabase.createUser(userDB)
 
     const tokenPayload: TokenPayload = {
