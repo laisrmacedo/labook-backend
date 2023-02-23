@@ -1,10 +1,12 @@
+import { USER_ROLES } from "../interfaces"
+
 export class User {
   constructor(
     private id: string, 
     private name: string,
     private email: string, 
     private password: string,
-    private role: string,
+    private role: USER_ROLES,
     private createdAt: string
   ){}
 
@@ -20,7 +22,7 @@ export class User {
   public getPassword():string{
     return this.password
   }
-  public getRole():string{
+  public getRole():USER_ROLES{
     return this.role
   }
   public getCreatedAt():string{

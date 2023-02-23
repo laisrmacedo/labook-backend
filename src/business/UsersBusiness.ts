@@ -1,12 +1,20 @@
 import { UsersDatabase } from "../database/UsersDatabase"
+import { CreateUserOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { UsersDB, Role } from "../interfaces"
+import { UserDB, USER_ROLES } from "../interfaces"
 import { User } from "../models/User"
+import { IdGenerator } from "../services/IdGenerator"
+import { TokenManager, TokenPayload } from "../services/TokenManager"
 
 export class UsersBusiness {
+  constructor(
+    private usersDatabase: UsersDatabase,
+    private tokenManager: TokenManager,
+    private idGenerator: IdGenerator
+  ){}
   public getUsers = async (q: string | undefined) => {
-    const usersDataBase = new UsersDatabase()
-    const usersDB: UsersDB[] = await usersDataBase.getUsers(q)
+    // const usersDataBase = new UsersDatabase()
+    const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
 
     //tipar pela class?
     const users: User[] = usersDB.map((userDB) => new User(
@@ -21,57 +29,42 @@ export class UsersBusiness {
     return (users)
   }
 
-  public createUser = async (name: string, email: string, password:string) => {
+  public createUser = async (input: CreateUserOutputDTO) => {
+    const {name, email, password} = input
+    
     //syntax checking
-    if (!name ||  name === "") {
-      throw new BadRequestError("ERROR: all fields are mandatory.")
-    }
-    if (typeof name !== "string") {
-      throw new BadRequestError("ERROR: 'name' must be of type string.")
-    }
     if(name.length < 2) {
       throw new BadRequestError("ERROR: 'name' must be at least 2 characters.")
     }
-
-    if(!email || email === ""){
-      throw new BadRequestError("ERROR: all fields are mandatory.")
-    }
-    if (typeof email !== "string") {
-      throw new BadRequestError("ERROR: 'email' must be of type string.")
-    }
     if (!email.match(/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/g)) {
       throw new BadRequestError("ERROR: 'email' must be like 'example@example.example'.")
-    }
-
-    if(!password || password === ""){
-      throw new BadRequestError("ERROR: all fields are mandatory.")
-    }
-    if (typeof password !== "string") {
-      throw new BadRequestError("ERROR: 'password' must be of type string.")
     }
     if (!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,12}$/g)) {
       throw new BadRequestError("ERROR: 'password' must be between 8 and 12 characters, with uppercase and lowercase letters and at least one number and one special character")
     }
     
     //replay ckeck
-    const userDatabase = new UsersDatabase()
-    const [foundEmail] = await userDatabase.getUserByEmail(email)
+    // const userDatabase = new UsersDatabase()
+    const foundEmail = await this.usersDatabase.getUserByEmail(email)
 
     if(foundEmail){
       throw new BadRequestError("ERROR: 'email' already exists.")
     }
 
+    // const idInstance = new IdGenerator()
+    const id = this.idGenerator.generate()
+
     //signup
     const userInstance = new User(
-      new Date().toDateString(), //temporaria
+      id,
       name, 
       email, 
       password, 
-      Role.NORMAL, //temporaria
+      USER_ROLES.NORMAL, //temporaria
       new Date().toISOString()
     )
 
-    const userDB: UsersDB = {
+    const userDB: UserDB = {
       id: userInstance.getId(),
       name: userInstance.getName(),
       email: userInstance.getEmail(),
@@ -80,8 +73,63 @@ export class UsersBusiness {
       created_at: userInstance.getCreatedAt()
     }
 
-    await userDatabase.createUser(userDB)
+    await this.usersDatabase.createUser(userDB)
 
-    return userInstance
+    const tokenPayload: TokenPayload = {
+      id: userInstance.getId(),
+      name: userInstance.getName(),
+      role: userInstance.getRole()
+    }
+
+    const token = this.tokenManager.createToken(tokenPayload)
+    const output = {
+      message: "Signup success",
+      token: token
+    }
+
+    return output
+  }
+
+  public login = async (input: LoginOutputDTO) => {
+    const { email, password } = input
+
+    const userDB: UserDB | undefined = await this.usersDatabase.getUserByEmail(email)
+
+    if(!userDB){
+      throw new BadRequestError("ERROR: 'email' not found.")
+    }
+
+    if(userDB.password !== password){
+      throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
+    }    
+
+    const tokenPayload: TokenPayload = {
+      id: userDB.id,
+      name: userDB.name,
+      role: userDB.role
+    }
+
+    const token = this.tokenManager.createToken(tokenPayload)
+    const output = {
+      message: "Login success",
+      token: token
+    }
+
+    return output
+  }
+
+  public deleteUser = async (idToDelete: string) => {
+    const userDB = await this.usersDatabase.getUserById(idToDelete)
+
+    if(userDB.length === 0){
+      throw new BadRequestError("ERROR: 'id' not found.")
+    }
+
+    await this.usersDatabase.deleteUser(idToDelete)
+    const output = {
+      message: "User deleted."
+    }
+
+    return output
   }
 }
