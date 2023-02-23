@@ -26,3 +26,4 @@ postsRouter.put("/:id", postsController.editPost)
 //  delete post
 postsRouter.delete("/:id", postsController.deletePost)
 //  like / dislike post
+postsRouter.put("/:id/like", postsController.likeOrDislikePost)

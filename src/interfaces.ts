@@ -12,15 +12,6 @@ export interface UserDB {
   created_at: string
 }
 
-// export interface User {
-//   id: string,
-//   name: string,
-//   email: string,
-//   password: string,
-//   role: string,
-//   createdAt: string
-// }
-
 export interface PostDB {
   id: string,
   creator_id: string,
@@ -31,12 +22,8 @@ export interface PostDB {
   updated_at: string
 }
 
-// export interface Post {
-//   id: string,
-//   creatorId: string,
-//   content: string,
-//   likes: number,
-//   dislikes: number,
-//   createdAt: string,
-//   updatedAt: string
-// }
+export interface LikesDislikesDB {
+  user_id: string,
+  post_id: string,
+  like: number
+}

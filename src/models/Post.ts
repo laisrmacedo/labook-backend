@@ -28,9 +28,23 @@ export class Post {
   public getLikes():number{
     return this.likes
   }
+  public addLike(){
+    this.likes += 1
+  }
+  public removeLike(){
+    this.likes -= 1
+  }
+  
   public getDislikes():number{
     return this.dislikes
   }
+  public addDislike(){
+    this.dislikes += 1
+  }
+  public removeDislike(){
+    this.dislikes -= 1
+  }
+
   public getCreatedAt():string{
     return this.createdAt
   }

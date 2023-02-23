@@ -47,7 +47,7 @@ export class PostController {
     }
   }
 
-  public editPost = async (req: Request, res: Response) => {
+  public editPost = async (req: Request, res: Response): Promise<void>  => {
     try {
       const input = this.postDTO.editPostInputDTO(
         req.params.id,
@@ -68,7 +68,7 @@ export class PostController {
     }
   }
 
-  public deletePost = async (req: Request, res: Response) => {
+  public deletePost = async (req: Request, res: Response): Promise<void>  => {
     try {
       const input = this.postDTO.deletePostInputDTO(
         req.params.id,
@@ -76,6 +76,27 @@ export class PostController {
       )
 
       await this.postsBusiness.deletePost(input)
+      res.status(200).end()
+  
+    } catch (error) {
+        console.log(error)
+        if (error instanceof BaseError) {
+          res.status(error.statusCode).send(error.message)
+        } else {
+          res.send("Erro inesperado")
+        }
+    }
+  }
+
+  public likeOrDislikePost = async (req: Request, res: Response): Promise<void>  => {
+    try {
+      const input = this.postDTO.likeOrDislikePostInputDTO(
+        req.params.id,
+        req.headers.authorization,
+        req.body.like
+      )
+
+      await this.postsBusiness.likeOrDislikePost(input)
       res.status(200).end()
   
     } catch (error) {

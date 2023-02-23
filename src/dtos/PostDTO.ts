@@ -16,6 +16,12 @@ export interface DeletePostOutputDTO {
   token: string
 }
 
+export interface LikeOrDislikePostOutputDTO {
+  idToLike: string,
+  token: string,
+  like: boolean,
+}
+
 export class PostDTO {
   public createPostInputDTO(
     content: unknown,
@@ -23,7 +29,7 @@ export class PostDTO {
   ): CreatePostOutputDTO{
     
     if (!content ||  content === "") {
-      throw new BadRequestError("ERROR: the field is mandatory.")
+      throw new BadRequestError("ERROR: the 'content' field is mandatory.")
     }
     if (typeof content !== "string") {
       throw new BadRequestError("ERROR: 'content' must be of type string.")
@@ -59,7 +65,7 @@ export class PostDTO {
     }
 
     if(!content || content === ""){
-      throw new BadRequestError("ERROR: the field is mandatory.")
+      throw new BadRequestError("ERROR: the 'content' field is mandatory.")
     }
     if (typeof content !== "string") {
       throw new BadRequestError("ERROR: 'content' must be of type string.")
@@ -101,6 +107,39 @@ export class PostDTO {
     const dto: DeletePostOutputDTO = {
       idToDelete,
       token
+    }
+
+    return dto
+  }
+
+  public likeOrDislikePostInputDTO(
+    idToLike: string,
+    token: string | undefined,
+    like: unknown
+  ): LikeOrDislikePostOutputDTO{
+
+    if(idToLike === ":id" || idToLike === ""){
+      throw new BadRequestError("ERROR: report the id of the post to be liked.")
+    }
+
+    if(!token || token === ""){
+      throw new BadRequestError("ERROR: log in to edit the post.")
+    }
+    if (typeof token !== "string") {
+      throw new BadRequestError("ERROR: 'token' must be of type string.")
+    }
+
+    if(like === undefined || like === ""){
+      throw new BadRequestError("ERROR: the 'like' field is mandatory.")
+    }
+    if (typeof like !== "boolean") {
+      throw new BadRequestError("ERROR: 'like' must be true or false.")
+    }
+
+    const dto: LikeOrDislikePostOutputDTO = {
+      idToLike,
+      token,
+      like
     }
 
     return dto
