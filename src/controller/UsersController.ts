@@ -11,9 +11,12 @@ export class UserController {
 
   public getUsers = async (req: Request, res: Response) => {
     try {
-      const q = req.query.q as string | undefined
+      const input = this.userDTO.getUsersInputDTO(
+        req.headers.authorization,
+        req.query.q
+      )
   
-      const output = await this.usersBusiness.getUsers(q)
+      const output = await this.usersBusiness.getUsers(input)
       res.status(200).send(output)
   
     } catch (error) {
@@ -69,9 +72,12 @@ export class UserController {
 
   public deleteUser = async (req: Request, res: Response) => {
     try {
-      const idToDelete = req.params.id
+      const input = this.userDTO.deleteUserInput(
+        req.params.id,
+        req.headers.authorization,
+      )
 
-      const output = await this.usersBusiness.deleteUser(idToDelete)
+      const output = await this.usersBusiness.deleteUser(input)
       res.status(200).send(output)
   
     } catch (error) {

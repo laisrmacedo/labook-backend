@@ -1,5 +1,5 @@
 import { UsersDatabase } from "../database/UsersDatabase"
-import { CreateUserOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
+import { CreateUserOutputDTO, DeleteUserOutput, GetUsersOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
 import { UserDB, USER_ROLES } from "../interfaces"
 import { User } from "../models/User"
@@ -15,9 +15,19 @@ export class UsersBusiness {
     private hashManager: HashManager
   ){}
 
-  public getUsers = async (q: string | undefined) => {
-    const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
+  public getUsers = async (input: GetUsersOutputDTO) => {
+    const {token, q} = input
 
+    //permission check
+    const payload = this.tokenManager.getPayload(token)
+    if(payload === null){
+      throw new BadRequestError("ERROR: Login failed")
+    }
+    if(payload.role !== USER_ROLES.ADMIN){
+      throw new BadRequestError("ERROR: Access denied.")
+    }
+    
+    const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
     const users: User[] = usersDB.map((userDB) => new User(
       userDB.id,
       userDB.name,
@@ -27,7 +37,7 @@ export class UsersBusiness {
       userDB.created_at
     ))
 
-    return (users)
+    return users
   }
 
   public signup = async (input: CreateUserOutputDTO) => {
@@ -89,9 +99,6 @@ export class UsersBusiness {
     if(!passwordHash){
       throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
     }
-    // if(userDB.password !== password){
-    //   throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
-    // }    
 
     const tokenPayload: TokenPayload = {
       id: userDB.id,
@@ -99,20 +106,29 @@ export class UsersBusiness {
       role: userDB.role
     }
 
-    const token = this.tokenManager.createToken(tokenPayload)
     const output = {
       message: "Login success",
-      token: token
+      token: this.tokenManager.createToken(tokenPayload)
     }
 
     return output
   }
 
-  public deleteUser = async (idToDelete: string) => {
+  public deleteUser = async (input: DeleteUserOutput) => {
+    const {idToDelete, token} = input
     const userDB = await this.usersDatabase.getUserById(idToDelete)
 
-    if(userDB.length === 0){
+    if(!userDB){
       throw new BadRequestError("ERROR: 'id' not found.")
+    }
+
+    const payload = this.tokenManager.getPayload(token)
+    if(payload === null){
+      throw new BadRequestError("ERROR: Login failed")
+    }
+
+    if(payload.role !== USER_ROLES.ADMIN && userDB.id !== payload.id){
+      throw new BadRequestError("ERROR: No permission to finish.")
     }
 
     await this.usersDatabase.deleteUser(idToDelete)
