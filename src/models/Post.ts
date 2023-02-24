@@ -1,4 +1,4 @@
-import { PostDB } from "../interfaces"
+import { PostBusinessModel, PostDB } from "../interfaces"
 
 export class Post {
   constructor(
@@ -68,7 +68,7 @@ export class Post {
     }
   }
 
-  public toBusinessModel() {
+  public toBusinessModel():PostBusinessModel {
     return {
       id: this.id,
       creatorId: this.creatorId,
@@ -79,5 +79,4 @@ export class Post {
       updatedAt: this.updatedAt
     }
   }
-
 }
