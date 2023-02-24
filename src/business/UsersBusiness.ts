@@ -1,7 +1,7 @@
 import { UsersDatabase } from "../database/UsersDatabase"
 import { CreateUserOutputDTO, DeleteUserOutput, GetUsersOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { UserDB, USER_ROLES } from "../interfaces"
+import { UserBusinessModel, UserDB, USER_ROLES } from "../interfaces"
 import { User } from "../models/User"
 import { HashManager } from "../services/HashManager"
 import { IdGenerator } from "../services/IdGenerator"
@@ -13,20 +13,20 @@ export class UsersBusiness {
     private tokenManager: TokenManager,
     private idGenerator: IdGenerator,
     private hashManager: HashManager
-  ){}
+  ) { }
 
-  public getUsers = async (input: GetUsersOutputDTO) => {
-    const {token, q} = input
+  public getUsers = async (input: GetUsersOutputDTO): Promise<UserBusinessModel[]> => {
+    const { token, q } = input
 
     //permission check
     const payload = this.tokenManager.getPayload(token)
-    if(payload === null){
+    if (payload === null) {
       throw new BadRequestError("ERROR: Login failed")
     }
-    if(payload.role !== USER_ROLES.ADMIN){
+    if (payload.role !== USER_ROLES.ADMIN) {
       throw new BadRequestError("ERROR: Access denied.")
     }
-    
+
     const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
     const users = usersDB.map((userDB) => {
       const user = new User(
@@ -43,11 +43,11 @@ export class UsersBusiness {
     return users
   }
 
-  public signup = async (input: CreateUserOutputDTO) => {
-    const {name, email, password} = input
-    
+  public signup = async (input: CreateUserOutputDTO): Promise<{}> => {
+    const { name, email, password } = input
+
     //syntax checking
-    if(name.length < 2) {
+    if (name.length < 2) {
       throw new BadRequestError("ERROR: 'name' must be at least 2 characters.")
     }
     if (!email.match(/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/g)) {
@@ -56,20 +56,20 @@ export class UsersBusiness {
     if (!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,12}$/g)) {
       throw new BadRequestError("ERROR: 'password' must be between 8 and 12 characters, with uppercase and lowercase letters and at least one number and one special character")
     }
-    
+
     //replay ckeck
     const foundEmail = await this.usersDatabase.getUserByEmail(email)
-    if(foundEmail){
+    if (foundEmail) {
       throw new BadRequestError("ERROR: 'email' already exists.")
     }
 
     //signup
     const userInstance = new User(
       this.idGenerator.generate(),
-      name, 
-      email, 
-      await this.hashManager.hash(password), 
-      USER_ROLES.NORMAL, 
+      name,
+      email,
+      await this.hashManager.hash(password),
+      USER_ROLES.NORMAL,
       new Date().toISOString()
     )
 
@@ -82,24 +82,23 @@ export class UsersBusiness {
     }
 
     const output = {
-      message: "Signup success",
       token: this.tokenManager.createToken(tokenPayload)
     }
 
     return output
   }
 
-  public login = async (input: LoginOutputDTO) => {
+  public login = async (input: LoginOutputDTO): Promise<{}> => {
     const { email, password } = input
 
     const userDB: UserDB | undefined = await this.usersDatabase.getUserByEmail(email)
 
-    if(!userDB){
+    if (!userDB) {
       throw new BadRequestError("ERROR: 'email' not found.")
     }
 
     const passwordHash = await this.hashManager.compare(password, userDB.password)
-    if(!passwordHash){
+    if (!passwordHash) {
       throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
     }
 
@@ -110,35 +109,29 @@ export class UsersBusiness {
     }
 
     const output = {
-      message: "Login success",
       token: this.tokenManager.createToken(tokenPayload)
     }
 
     return output
   }
 
-  public deleteUser = async (input: DeleteUserOutput) => {
-    const {idToDelete, token} = input
+  public deleteUser = async (input: DeleteUserOutput): Promise<void> => {
+    const { idToDelete, token } = input
     const userDB = await this.usersDatabase.getUserById(idToDelete)
 
-    if(!userDB){
+    if (!userDB) {
       throw new BadRequestError("ERROR: 'id' not found.")
     }
 
     const payload = this.tokenManager.getPayload(token)
-    if(payload === null){
+    if (payload === null) {
       throw new BadRequestError("ERROR: Login failed")
     }
 
-    if(payload.role !== USER_ROLES.ADMIN && userDB.id !== payload.id){
+    if (payload.role !== USER_ROLES.ADMIN && userDB.id !== payload.id) {
       throw new BadRequestError("ERROR: No permission to finish.")
     }
 
     await this.usersDatabase.deleteUser(idToDelete)
-    const output = {
-      message: "User deleted."
-    }
-
-    return output
   }
 }

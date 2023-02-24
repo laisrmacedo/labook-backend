@@ -1,4 +1,4 @@
-import { UserDB, USER_ROLES } from "../interfaces"
+import { UserBusinessModel, UserDB, USER_ROLES } from "../interfaces"
 
 export class User {
   constructor(
@@ -40,7 +40,7 @@ export class User {
     }
   }
 
-  public toBusinessModel() {
+  public toBusinessModel(): UserBusinessModel {
     return {
       id: this.id,
       name: this.name,
