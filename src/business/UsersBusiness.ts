@@ -50,20 +50,17 @@ export class UsersBusiness {
       throw new BadRequestError("ERROR: 'email' already exists.")
     }
 
-    const hashedPassword = await this.hashManager.hash(password)
-
     //signup
     const userInstance = new User(
       this.idGenerator.generate(),
       name, 
       email, 
-      hashedPassword, 
+      await this.hashManager.hash(password), 
       USER_ROLES.NORMAL, 
       new Date().toISOString()
     )
 
-    const userDB = userInstance.toDBModel()
-    await this.usersDatabase.createUser(userDB)
+    await this.usersDatabase.createUser(userInstance.toDBModel())
 
     const tokenPayload: TokenPayload = {
       id: userInstance.getId(),
@@ -71,10 +68,9 @@ export class UsersBusiness {
       role: userInstance.getRole()
     }
 
-    const token = this.tokenManager.createToken(tokenPayload)
     const output = {
       message: "Signup success",
-      token: token
+      token: this.tokenManager.createToken(tokenPayload)
     }
 
     return output
@@ -89,9 +85,13 @@ export class UsersBusiness {
       throw new BadRequestError("ERROR: 'email' not found.")
     }
 
-    if(userDB.password !== password){
+    const passwordHash = await this.hashManager.compare(password, userDB.password)
+    if(!passwordHash){
       throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
-    }    
+    }
+    // if(userDB.password !== password){
+    //   throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
+    // }    
 
     const tokenPayload: TokenPayload = {
       id: userDB.id,
