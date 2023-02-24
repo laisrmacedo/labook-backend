@@ -28,14 +28,17 @@ export class UsersBusiness {
     }
     
     const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
-    const users: User[] = usersDB.map((userDB) => new User(
-      userDB.id,
-      userDB.name,
-      userDB.email,
-      userDB.password,
-      userDB.role,
-      userDB.created_at
-    ))
+    const users = usersDB.map((userDB) => {
+      const user = new User(
+        userDB.id,
+        userDB.name,
+        userDB.email,
+        userDB.password,
+        userDB.role,
+        userDB.created_at
+      )
+      return user.toBusinessModel()
+    })
 
     return users
   }

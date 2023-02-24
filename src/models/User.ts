@@ -40,16 +40,15 @@ export class User {
     }
   }
 
-  // public toBusinessModel() {
-  //   return {
-  //     id: this.id,
-  //     creatorId: this.creatorId,
-  //     content: this.content,
-  //     likes: this.likes,
-  //     dislikes: this.dislikes,
-  //     createdAt: this.createdAt,
-  //     updatedAt: this.updatedAt
-  //   }
-  // }
+  public toBusinessModel() {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      password: this.password,
+      role: this.role,
+      createdAt: this.createdAt
+    }
+  }
 
 }
