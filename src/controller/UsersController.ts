@@ -7,7 +7,7 @@ export class UserController {
   constructor(
     private userDTO: UserDTO,
     private usersBusiness: UsersBusiness
-  ){}
+  ) { }
 
   public getUsers = async (req: Request, res: Response) => {
     try {
@@ -15,17 +15,17 @@ export class UserController {
         req.headers.authorization,
         req.query.q
       )
-  
+
       const output = await this.usersBusiness.getUsers(input)
       res.status(200).send(output)
-  
+
     } catch (error) {
-        console.log(error)
-        if (error instanceof BaseError) {
-            res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 
@@ -39,14 +39,14 @@ export class UserController {
 
       const output = await this.usersBusiness.signup(input)
       res.status(201).send(output)
-  
+
     } catch (error) {
-        console.log(error)
-        if (error instanceof BaseError) {
-          res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 
@@ -59,14 +59,14 @@ export class UserController {
 
       const output = await this.usersBusiness.login(input)
       res.status(200).send(output)
-  
+
     } catch (error) {
-        console.log(error)
-       if (error instanceof BaseError) {
-              res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 
@@ -77,16 +77,16 @@ export class UserController {
         req.headers.authorization,
       )
 
-      const output = await this.usersBusiness.deleteUser(input)
-      res.status(200).send(output)
-  
+      await this.usersBusiness.deleteUser(input)
+      res.status(200).end()
+
     } catch (error) {
-        console.log(error)
-       if (error instanceof BaseError) {
-              res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 }
