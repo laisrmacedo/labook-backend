@@ -9,7 +9,7 @@ export class UserController {
     private usersBusiness: UsersBusiness
   ) { }
 
-  public getUsers = async (req: Request, res: Response) => {
+  public getUsers = async (req: Request, res: Response): Promise<void> => {
     try {
       const input = this.userDTO.getUsersInputDTO(
         req.headers.authorization,
@@ -29,7 +29,7 @@ export class UserController {
     }
   }
 
-  public signup = async (req: Request, res: Response) => {
+  public signup = async (req: Request, res: Response): Promise<void> => {
     try {
       const input = this.userDTO.createUserInputDTO(
         req.body.name,
@@ -50,7 +50,7 @@ export class UserController {
     }
   }
 
-  public login = async (req: Request, res: Response) => {
+  public login = async (req: Request, res: Response): Promise<void> => {
     try {
       const input = this.userDTO.loginInputDTO(
         req.body.email,
@@ -70,7 +70,7 @@ export class UserController {
     }
   }
 
-  public deleteUser = async (req: Request, res: Response) => {
+  public deleteUser = async (req: Request, res: Response): Promise<void> => {
     try {
       const input = this.userDTO.deleteUserInput(
         req.params.id,
