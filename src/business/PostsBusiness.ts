@@ -108,7 +108,7 @@ export class PostsBusiness {
     }
 
     if(payload.role !== USER_ROLES.ADMIN && postDB.creator_id !== payload.id){
-      throw new BadRequestError("ERROR: Permission fail")
+      throw new BadRequestError("ERROR: Access Denied")
     }
 
     await this.postsDatabase.deletePost(idToDelete)
