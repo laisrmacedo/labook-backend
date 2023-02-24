@@ -96,16 +96,16 @@ export class PostsBusiness {
     //token ckeck
     const payload = this.tokenManager.getPayload(token)
     if(payload === null){
-      throw new BadRequestError("ERROR: Login failed")
+      throw new BadRequestError("ERROR: Login failed.")
     }
 
     const postDB: PostDB | undefined = await this.postsDatabase.getPostById(idToDelete)
     if(!postDB){
-      throw new BadRequestError("ERROR: 'id' not found")
+      throw new BadRequestError("ERROR: 'id' not found.")
     }
 
     if(payload.role !== USER_ROLES.ADMIN && postDB.creator_id !== payload.id){
-      throw new BadRequestError("ERROR: Access Denied")
+      throw new BadRequestError("ERROR: No permission to finish.")
     }
 
     await this.postsDatabase.deletePost(idToDelete)
