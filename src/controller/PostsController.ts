@@ -11,10 +11,12 @@ export class PostController {
   ){}
   public getPosts = async (req: Request, res: Response): Promise<void> => {
     try {
-      const q = req.query.q as string | undefined
-  
-      const output = await this.postsBusiness.getPosts(q)
+      const input = this.postDTO.getPostsInputDTO(
+        req.headers.authorization,
+        req.query.q
+      )
 
+      const output = await this.postsBusiness.getPosts(input)
       res.status(200).send(output)
   
     } catch (error) {

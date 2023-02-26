@@ -1,6 +1,11 @@
 import { BadRequestError } from "../errors/BadRequestError"
 import { User } from "../models/User"
 
+export interface GetUsersOutputDTO { 
+  token: string,
+  q: string | undefined
+}
+
 export interface CreateUserOutputDTO {
   name: string,
   email: string,
@@ -12,7 +17,36 @@ export interface LoginOutputDTO {
   password: string
 }
 
+export interface DeleteUserOutput {
+  idToDelete: string, 
+  token: string
+}
+
 export class UserDTO {
+  public getUsersInputDTO(
+    token: unknown,
+    q: unknown
+  ):GetUsersOutputDTO{
+    
+    if(!token){
+      throw new BadRequestError("ERROR: log in to see the users.")
+    }
+    if (typeof token !== "string") {
+      throw new BadRequestError("ERROR: 'token' must be of type string.")
+    }
+
+    if (q !== undefined && typeof q !== "string") {
+      throw new BadRequestError("ERROR: the query must be of type string.")
+    }
+
+    const dto: GetUsersOutputDTO = {
+      token,
+      q
+    }
+
+    return dto
+  }
+
   public createUserInputDTO(
     name: unknown,
     email: unknown,
@@ -75,9 +109,28 @@ export class UserDTO {
 
     return dto
   }
-  // public createUserOutput(user: User){
-  //   const dto = {
-      
-  //   }
-  // }
+
+  public deleteUserInput(
+    idToDelete: string, 
+    token: unknown
+    ): DeleteUserOutput{
+    
+    if(idToDelete === ":id"){
+      throw new BadRequestError("ERROR: report the id of the user to be deleted")
+    }
+    
+    if(!token){
+      throw new BadRequestError("ERROR: log in to delete the user.")
+    }
+    if (typeof token !== "string") {
+      throw new BadRequestError("ERROR: 'token' must be of type string.")
+    }
+    
+    const dto: DeleteUserOutput = {
+      idToDelete,
+      token
+    }
+
+    return dto
+  }
 }

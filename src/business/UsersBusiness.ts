@@ -1,8 +1,9 @@
 import { UsersDatabase } from "../database/UsersDatabase"
-import { CreateUserOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
+import { CreateUserOutputDTO, DeleteUserOutput, GetUsersOutputDTO, LoginOutputDTO } from "../dtos/UserDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { UserDB, USER_ROLES } from "../interfaces"
+import { UserBusinessModel, UserDB, USER_ROLES } from "../interfaces"
 import { User } from "../models/User"
+import { HashManager } from "../services/HashManager"
 import { IdGenerator } from "../services/IdGenerator"
 import { TokenManager, TokenPayload } from "../services/TokenManager"
 
@@ -10,30 +11,43 @@ export class UsersBusiness {
   constructor(
     private usersDatabase: UsersDatabase,
     private tokenManager: TokenManager,
-    private idGenerator: IdGenerator
-  ){}
-  public getUsers = async (q: string | undefined) => {
-    // const usersDataBase = new UsersDatabase()
+    private idGenerator: IdGenerator,
+    private hashManager: HashManager
+  ) { }
+
+  public getUsers = async (input: GetUsersOutputDTO): Promise<UserBusinessModel[]> => {
+    const { token, q } = input
+
+    //permission check
+    const payload = this.tokenManager.getPayload(token)
+    if (payload === null) {
+      throw new BadRequestError("ERROR: Login failed")
+    }
+    if (payload.role !== USER_ROLES.ADMIN) {
+      throw new BadRequestError("ERROR: Access denied.")
+    }
+
     const usersDB: UserDB[] = await this.usersDatabase.getUsers(q)
+    const users = usersDB.map((userDB) => {
+      const user = new User(
+        userDB.id,
+        userDB.name,
+        userDB.email,
+        userDB.password,
+        userDB.role,
+        userDB.created_at
+      )
+      return user.toBusinessModel()
+    })
 
-    //tipar pela class?
-    const users: User[] = usersDB.map((userDB) => new User(
-      userDB.id,
-      userDB.name,
-      userDB.email,
-      userDB.password,
-      userDB.role,
-      userDB.created_at
-    ))
-
-    return (users)
+    return users
   }
 
-  public createUser = async (input: CreateUserOutputDTO) => {
-    const {name, email, password} = input
-    
+  public signup = async (input: CreateUserOutputDTO): Promise<{}> => {
+    const { name, email, password } = input
+
     //syntax checking
-    if(name.length < 2) {
+    if (name.length < 2) {
       throw new BadRequestError("ERROR: 'name' must be at least 2 characters.")
     }
     if (!email.match(/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/g)) {
@@ -42,38 +56,24 @@ export class UsersBusiness {
     if (!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,12}$/g)) {
       throw new BadRequestError("ERROR: 'password' must be between 8 and 12 characters, with uppercase and lowercase letters and at least one number and one special character")
     }
-    
-    //replay ckeck
-    // const userDatabase = new UsersDatabase()
-    const foundEmail = await this.usersDatabase.getUserByEmail(email)
 
-    if(foundEmail){
+    //replay ckeck
+    const foundEmail = await this.usersDatabase.getUserByEmail(email)
+    if (foundEmail) {
       throw new BadRequestError("ERROR: 'email' already exists.")
     }
 
-    // const idInstance = new IdGenerator()
-    const id = this.idGenerator.generate()
-
     //signup
     const userInstance = new User(
-      id,
-      name, 
-      email, 
-      password, 
-      USER_ROLES.NORMAL, //temporaria
+      this.idGenerator.generate(),
+      name,
+      email,
+      await this.hashManager.hash(password),
+      USER_ROLES.NORMAL,
       new Date().toISOString()
     )
 
-    const userDB: UserDB = {
-      id: userInstance.getId(),
-      name: userInstance.getName(),
-      email: userInstance.getEmail(),
-      password: userInstance.getPassword(),
-      role: userInstance.getRole(),
-      created_at: userInstance.getCreatedAt()
-    }
-
-    await this.usersDatabase.createUser(userDB)
+    await this.usersDatabase.createUser(userInstance.toDBModel())
 
     const tokenPayload: TokenPayload = {
       id: userInstance.getId(),
@@ -81,27 +81,26 @@ export class UsersBusiness {
       role: userInstance.getRole()
     }
 
-    const token = this.tokenManager.createToken(tokenPayload)
     const output = {
-      message: "Signup success",
-      token: token
+      token: this.tokenManager.createToken(tokenPayload)
     }
 
     return output
   }
 
-  public login = async (input: LoginOutputDTO) => {
+  public login = async (input: LoginOutputDTO): Promise<{}> => {
     const { email, password } = input
 
     const userDB: UserDB | undefined = await this.usersDatabase.getUserByEmail(email)
 
-    if(!userDB){
+    if (!userDB) {
       throw new BadRequestError("ERROR: 'email' not found.")
     }
 
-    if(userDB.password !== password){
+    const passwordHash = await this.hashManager.compare(password, userDB.password)
+    if (!passwordHash) {
       throw new BadRequestError("ERROR: 'email' or 'password' are wrong.")
-    }    
+    }
 
     const tokenPayload: TokenPayload = {
       id: userDB.id,
@@ -109,27 +108,30 @@ export class UsersBusiness {
       role: userDB.role
     }
 
-    const token = this.tokenManager.createToken(tokenPayload)
     const output = {
-      message: "Login success",
-      token: token
+      token: this.tokenManager.createToken(tokenPayload)
     }
 
     return output
   }
 
-  public deleteUser = async (idToDelete: string) => {
+  public deleteUser = async (input: DeleteUserOutput): Promise<void> => {
+    const { idToDelete, token } = input
     const userDB = await this.usersDatabase.getUserById(idToDelete)
 
-    if(userDB.length === 0){
+    if (!userDB) {
       throw new BadRequestError("ERROR: 'id' not found.")
     }
 
-    await this.usersDatabase.deleteUser(idToDelete)
-    const output = {
-      message: "User deleted."
+    const payload = this.tokenManager.getPayload(token)
+    if (payload === null) {
+      throw new BadRequestError("ERROR: Login failed")
     }
 
-    return output
+    if (payload.role !== USER_ROLES.ADMIN && userDB.id !== payload.id) {
+      throw new BadRequestError("ERROR: No permission to finish.")
+    }
+
+    await this.usersDatabase.deleteUser(idToDelete)
   }
 }

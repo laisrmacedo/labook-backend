@@ -4,8 +4,6 @@ import { BaseDatabase } from "./BaseDatabase";
 export class UsersDatabase extends BaseDatabase{
   //attributes
   public static TABLE_USERS = "users" //global constant
-  public static TABLE_POSTS = "posts" //global constant
-  public static TABLE_LIKES_DISLIKES = "likes_dislikes" //global constant
 
   //methods
   public async getUsers(q: string | undefined): Promise<UserDB[]>{
@@ -23,8 +21,8 @@ export class UsersDatabase extends BaseDatabase{
     return usersDB
   }
 
-  public async getUserById(id: string): Promise<UserDB[]>{
-      const result: UserDB[] = await BaseDatabase
+  public async getUserById(id: string): Promise<UserDB>{
+      const [result]: UserDB[] = await BaseDatabase
       .connection(UsersDatabase.TABLE_USERS)
       .where({ id })
 
@@ -46,14 +44,6 @@ export class UsersDatabase extends BaseDatabase{
   }
 
   public async deleteUser(idToDelete: string): Promise<void>{
-    // await BaseDatabase
-    // .connection(UsersDatabase.TABLE_LIKES_DISLIKES)
-    // .del()
-    // .where({user_id: idToDelete})
-    // await BaseDatabase
-    // .connection(UsersDatabase.TABLE_POSTS)
-    // .del()
-    // .where({creator_id: idToDelete})
     await BaseDatabase
     .connection(UsersDatabase.TABLE_USERS)
     .del()

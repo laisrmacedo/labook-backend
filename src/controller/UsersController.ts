@@ -7,54 +7,50 @@ export class UserController {
   constructor(
     private userDTO: UserDTO,
     private usersBusiness: UsersBusiness
-  ){}
-  public getUsers = async (req: Request, res: Response) => {
-    try {
-      const q = req.query.q as string | undefined
-  
-      // const usersBusiness = new UsersBusiness()
-      const output = await this.usersBusiness.getUsers(q)
+  ) { }
 
+  public getUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const input = this.userDTO.getUsersInputDTO(
+        req.headers.authorization,
+        req.query.q
+      )
+
+      const output = await this.usersBusiness.getUsers(input)
       res.status(200).send(output)
-  
+
     } catch (error) {
-        console.log(error)
-        if (error instanceof BaseError) {
-            res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 
-  public createUser = async (req: Request, res: Response) => {
+  public signup = async (req: Request, res: Response): Promise<void> => {
     try {
-      // const userDTO = new UserDTO()
-
       const input = this.userDTO.createUserInputDTO(
         req.body.name,
         req.body.email,
         req.body.password,
       )
 
-      // const userBusiness = new UsersBusiness()
-      const output = await this.usersBusiness.createUser(input)
+      const output = await this.usersBusiness.signup(input)
+      res.status(201).send(output)
 
-      res.status(201).send({
-        message: "User created."
-      })
-  
     } catch (error) {
-        console.log(error)
-        if (error instanceof BaseError) {
-          res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 
-  public login = async (req: Request, res: Response) => {
+  public login = async (req: Request, res: Response): Promise<void> => {
     try {
       const input = this.userDTO.loginInputDTO(
         req.body.email,
@@ -63,31 +59,34 @@ export class UserController {
 
       const output = await this.usersBusiness.login(input)
       res.status(200).send(output)
-  
+
     } catch (error) {
-        console.log(error)
-       if (error instanceof BaseError) {
-              res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 
-  public deleteUser = async (req: Request, res: Response) => {
+  public deleteUser = async (req: Request, res: Response): Promise<void> => {
     try {
-      const idToDelete = req.params.id
+      const input = this.userDTO.deleteUserInput(
+        req.params.id,
+        req.headers.authorization,
+      )
 
-      const output = await this.usersBusiness.deleteUser(idToDelete)
-      res.status(200).send(output)
-  
+      await this.usersBusiness.deleteUser(input)
+      res.status(200).end()
+
     } catch (error) {
-        console.log(error)
-       if (error instanceof BaseError) {
-              res.status(error.statusCode).send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
+      console.log(error)
+      if (error instanceof BaseError) {
+        res.status(error.statusCode).send(error.message)
+      } else {
+        res.send("Erro inesperado")
+      }
     }
   }
 }
