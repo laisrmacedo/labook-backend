@@ -1,5 +1,10 @@
 import { BadRequestError } from "../errors/BadRequestError"
 
+export interface GetPostsOutputDTO { 
+  token: string,
+  q: string | undefined
+}
+
 export interface CreatePostOutputDTO {
   content: string
   token: string
@@ -23,6 +28,30 @@ export interface LikeOrDislikePostOutputDTO {
 }
 
 export class PostDTO {
+  public getPostsInputDTO(
+    token: unknown,
+    q: unknown
+  ):GetPostsOutputDTO{
+    
+    if(!token){
+      throw new BadRequestError("ERROR: log in to see the users.")
+    }
+    if (typeof token !== "string") {
+      throw new BadRequestError("ERROR: 'token' must be of type string.")
+    }
+
+    if (q !== undefined && typeof q !== "string") {
+      throw new BadRequestError("ERROR: the query must be of type string.")
+    }
+
+    const dto: GetPostsOutputDTO = {
+      token,
+      q
+    }
+
+    return dto
+  }
+
   public createPostInputDTO(
     content: unknown,
     token: string | undefined

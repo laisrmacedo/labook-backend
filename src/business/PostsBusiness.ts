@@ -1,8 +1,7 @@
-import e from "express"
 import { PostsDatabase } from "../database/PostsDatabase"
-import { CreatePostOutputDTO, DeletePostOutputDTO, EditPostOutputDTO, LikeOrDislikePostOutputDTO } from "../dtos/PostDTO"
+import { CreatePostOutputDTO, DeletePostOutputDTO, EditPostOutputDTO, GetPostsOutputDTO, LikeOrDislikePostOutputDTO } from "../dtos/PostDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { LikesDislikesDB, PostBusinessModel, PostDB, USER_ROLES } from "../interfaces"
+import { LikesDislikesDB, PostBusinessModel, PostDB, UserDB, USER_ROLES } from "../interfaces"
 import { Post } from "../models/Post"
 import { IdGenerator } from "../services/IdGenerator"
 import { TokenManager } from "../services/TokenManager"
@@ -13,11 +12,17 @@ export class PostsBusiness {
     private tokenManager: TokenManager,
     private idGenerator: IdGenerator
   ){}
-  //falta proteger com o pedido do token
-  public getPosts = async (q: string | undefined): Promise<PostBusinessModel[]> => {
-    
+
+  public getPosts = async (input: GetPostsOutputDTO) => {
+    const { token, q } = input
+
+    //login check
+    const payload = this.tokenManager.getPayload(token)
+    if (payload === null) {
+      throw new BadRequestError("ERROR: Login failed")
+    }
+
     const postsDB: PostDB[] = await this.postsDatabase.getPosts(q)
-    console.log(postsDB)
     const posts = postsDB.map((postDB) => {
       const post = new Post(
         postDB.id,
@@ -28,8 +33,26 @@ export class PostsBusiness {
         postDB.created_at,
         postDB.updated_at
       )
-      return post.toBusinessModel()
+      const stylizedPost = {
+        id: post.getId(),
+        content: post.getContent(),
+        likes: post.getLikes(),
+        dislikes: post.getDislikes(),
+        createAt: post.getCreatedAt(),
+        updatedAt: post.getUpdatedAt(),
+        creator: {
+          id: post.getCreatorId(),
+          name: ""
+        }
+      }
+      return stylizedPost
     })
+
+    for (const post of posts) {
+      const userDB: UserDB = await this.postsDatabase.getPostCreator(post.creator.id)
+      post.creator.name = userDB.name
+    }
+
     return posts
   }
 
@@ -71,7 +94,7 @@ export class PostsBusiness {
     }
 
     if(postDB.creator_id !== payload.id){
-      throw new BadRequestError("ERROR: Permission fail")
+      throw new BadRequestError("ERROR: No permission to finish.")
     }
 
     const updatedPost = new Post(

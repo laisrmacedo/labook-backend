@@ -1,10 +1,11 @@
-import { LikesDislikesDB, PostDB } from "../interfaces";
+import { LikesDislikesDB, PostDB, UserDB } from "../interfaces";
 import { BaseDatabase } from "./BaseDatabase";
 
 export class PostsDatabase extends BaseDatabase{
   //attributes
   public static TABLE_POSTS = "posts" //global constant
   public static TABLE_LIKES_DISLIKES = "likes_dislikes" //global constant
+  public static TABLE_USERS = "users" //global constant
 
   //methods
   public async getPosts(q: string | undefined): Promise<PostDB[]>{
@@ -91,5 +92,14 @@ export class PostsDatabase extends BaseDatabase{
       user_id: LikeDislikeDB.user_id,
       post_id: LikeDislikeDB.post_id
     })
+  }
+
+  public async getPostCreator(creatorId: string): Promise<UserDB>{
+    const [users] = await BaseDatabase
+    .connection(PostsDatabase.TABLE_USERS)
+    .select()
+    .where({ id: creatorId })
+
+    return users
   }
 }
