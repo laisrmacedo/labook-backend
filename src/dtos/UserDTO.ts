@@ -35,7 +35,7 @@ export class UserDTO {
       throw new BadRequestError("ERROR: 'token' must be of type string.")
     }
 
-    if (typeof q !== "string") {
+    if (q !== undefined && typeof q !== "string") {
       throw new BadRequestError("ERROR: the query must be of type string.")
     }
 
