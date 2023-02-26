@@ -36,7 +36,7 @@ export class UserDTO {
     }
 
     if (typeof q !== "string") {
-      throw new BadRequestError("ERROR: 'email' must be of type string.")
+      throw new BadRequestError("ERROR: the query must be of type string.")
     }
 
     const dto: GetUsersOutputDTO = {
