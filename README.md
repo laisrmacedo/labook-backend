@@ -42,6 +42,7 @@ POSTS
 - Layered Architecture;
 - UUID;
 - Hashing Passwords;
+- Tokens JWT;
 - Authentication and Authorization;
 - Routing;
 - Postman.
