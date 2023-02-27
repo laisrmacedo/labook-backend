@@ -17,34 +17,34 @@ https://documenter.getpostman.com/view/24460805/2s93CRJWGq
 
 ## 🕹 Endpoints
 
+- Login 
+
 USERS
-- GET All Users; 
-- GET Users by Name; 
+- GET All Users;
 - POST Create User; 
-- PUT Edit User; 
 - DEL Delete User; 
 
-PRODUCTS
-- GET All Products;
-- GET Product by Id;
-- POST Create Product;
-- PUT Edit Product;
-- DEL Delete Product;
-
-PURCHASES
-- GET All Purchases;
-- GET Purchase by Id;
-- POST Create Purchase;
-- DEL Delete Purchase;
+POSTS
+- GET All Posts;
+- POST Create Post;
+- PUT Edit Post;
+- DEL Delete Post;
+- PUT Like or Dislike.
 
 ## 🛠 Technologies
 
-- NodeJS
-- Typescript
-- Express
-- SQL e SQLite
-- Knex
-- Postman
+- NodeJS;
+- Typescript;
+- Express;
+- SQL e SQLite;
+- Knex;
+- POO;
+- Layered Architecture;
+- UUID;
+- Hashing Passwords;
+- Authentication and Authorization;
+- Routing;
+- Postman.
 
 ## 👩‍💻 Author
 
