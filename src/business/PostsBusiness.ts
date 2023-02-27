@@ -1,7 +1,7 @@
 import { PostsDatabase } from "../database/PostsDatabase"
 import { CreatePostOutputDTO, DeletePostOutputDTO, EditPostOutputDTO, GetPostsOutputDTO, LikeOrDislikePostOutputDTO } from "../dtos/PostDTO"
 import { BadRequestError } from "../errors/BadRequestError"
-import { LikesDislikesDB, PostBusinessModel, PostDB, UserDB, USER_ROLES } from "../interfaces"
+import { LikesDislikesDB, PostDB, UserDB, USER_ROLES } from "../interfaces"
 import { Post } from "../models/Post"
 import { IdGenerator } from "../services/IdGenerator"
 import { TokenManager } from "../services/TokenManager"

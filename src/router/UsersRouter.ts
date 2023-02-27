@@ -18,8 +18,7 @@ const userController = new UserController(
     new HashManager()
   )
 )
-// signup
-//  login
+
 usersRouter.get("/", userController.getUsers)
 usersRouter.post("/signup", userController.signup)
 usersRouter.post("/login", userController.login)

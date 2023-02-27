@@ -2,7 +2,6 @@ import { Request, Response } from "express"
 import { PostsBusiness } from "../business/PostsBusiness"
 import { PostDTO } from "../dtos/PostDTO"
 import { BaseError } from "../errors/BaseError"
-import { PostDB } from "../interfaces"
 
 export class PostController {
   constructor(

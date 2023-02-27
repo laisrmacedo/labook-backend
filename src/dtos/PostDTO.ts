@@ -64,7 +64,6 @@ export class PostDTO {
       throw new BadRequestError("ERROR: 'content' must be of type string.")
     }
 
-    //verificaçao desnecessária?
     if (!token ||  token === "") {
       throw new BadRequestError("ERROR: Log in to create a post.")
     }

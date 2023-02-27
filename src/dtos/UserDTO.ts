@@ -1,5 +1,4 @@
 import { BadRequestError } from "../errors/BadRequestError"
-import { User } from "../models/User"
 
 export interface GetUsersOutputDTO { 
   token: string,
