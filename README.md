@@ -15,6 +15,36 @@ https://dbdiagram.io/d/63d16443296d97641d7c1ae1
 
 https://documenter.getpostman.com/view/24460805/2s93CRJWGq
 
+## 💻 Installation Instructions
+
+1. Fork and clone these repository.
+2. In NPM package manager run:
+
+  ```sh
+  npm i
+  ```
+  
+3. Create your own file `file-name.db` on folder `database`.
+4. Open the file `labook.sql` and run the table creation commands.
+5. Create a file called `.env` in the root of the project to place these environment variables.
+
+  ```sh
+  //Express Port
+  PORT=3003
+  //SQLite database file path
+  DB_FILE_PATH=./src/database/file-name.db
+  //Credentials and secret keys
+  JWT_KEY=chose-a-secret-key
+  //Token expiration time (exemple: 1 day)
+  JWT_EXPIRES_IN=1d
+  ```
+  
+6. Run the server.
+  
+  ```sh
+  npm run dev
+  ```
+  
 ## 🕹 Endpoints
 
 - Login 
