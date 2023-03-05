@@ -29,13 +29,14 @@ https://documenter.getpostman.com/view/24460805/2s93CRJWGq
 5. Create a file called `.env` in the root of the project to place these environment variables.
 
   ```sh
-  //Express Port
+  
+  #Express Port
   PORT=3003
-  //SQLite database file path
+  #SQLite database file path
   DB_FILE_PATH=./src/database/file-name.db
-  //Credentials and secret keys
+  #Credentials and secret keys
   JWT_KEY=chose-a-secret-key
-  //Token expiration time (exemple: 1 day)
+  #Token expiration time (exemple: 1 day)
   JWT_EXPIRES_IN=1d
   ```
   
