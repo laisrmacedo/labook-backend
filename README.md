@@ -17,7 +17,7 @@ https://documenter.getpostman.com/view/24460805/2s93CRJWGq
 
 ## 💻 Installation Instructions
 
-1. Fork and clone these repository.
+1. Clone the repository.
 2. In NPM package manager run:
 
   ```sh
@@ -67,7 +67,7 @@ POSTS
 - NodeJS;
 - Typescript;
 - Express;
-- SQL e SQLite;
+- SQLite;
 - Knex;
 - POO;
 - Layered Architecture;
